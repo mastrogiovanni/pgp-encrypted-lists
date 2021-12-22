@@ -182,7 +182,9 @@ var PgpService = /** @class */ (function () {
                         e_1 = _b.sent();
                         throw new Error('Signature could not be verified: ' + e_1.message);
                     case 8: return [2 /*return*/, jwt.sign({
-                            idTemplate: loginDto.idTemplate,
+                            data: {
+                                idTemplate: loginDto.idTemplate
+                            },
                             exp: Math.floor(Date.now() / 1000) + (60 * 60)
                         }, JWT_TOKEN_SECRET)];
                 }

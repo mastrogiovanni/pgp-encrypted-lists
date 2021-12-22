@@ -70,14 +70,20 @@ function submit(idTemplate, name, email, payload) {
   });
 }
 
-function list(idTemplate) {
+function list(idTemplate, jwtToken) {
   var response;
   return regeneratorRuntime.async(function list$(_context3) {
     while (1) {
       switch (_context3.prev = _context3.next) {
         case 0:
           _context3.next = 2;
-          return regeneratorRuntime.awrap(axios.get("http://localhost:3000/pgp/list/".concat(idTemplate)));
+          return regeneratorRuntime.awrap(axios.request({
+            method: 'get',
+            url: "http://localhost:3000/pgp/list/".concat(idTemplate),
+            headers: {
+              'X-Auth-Token': jwtToken
+            }
+          }));
 
         case 2:
           response = _context3.sent;
@@ -157,7 +163,7 @@ function login(idTemplate, privateKeyArmored) {
 }
 
 function bootstrap() {
-  var created, submissions, i, submission, results;
+  var created, jwtToken, submissions, i, submission, results;
   return regeneratorRuntime.async(function bootstrap$(_context5) {
     while (1) {
       switch (_context5.prev = _context5.next) {
@@ -168,51 +174,47 @@ function bootstrap() {
 
         case 3:
           created = _context5.sent;
-          _context5.t0 = console;
-          _context5.next = 7;
+          _context5.next = 6;
           return regeneratorRuntime.awrap(login(created._id, created.privateKey));
 
-        case 7:
-          _context5.t1 = _context5.sent;
-
-          _context5.t0.log.call(_context5.t0, _context5.t1);
-
+        case 6:
+          jwtToken = _context5.sent;
           submissions = {};
           i = 0;
 
-        case 11:
+        case 9:
           if (!(i < 3)) {
-            _context5.next = 19;
+            _context5.next = 17;
             break;
           }
 
-          _context5.next = 14;
+          _context5.next = 12;
           return regeneratorRuntime.awrap(submit(created._id, "pippo" + i, i + "pluto@pippo.com", {
             option1: true,
             option2: false,
             option3: true
           }));
 
-        case 14:
+        case 12:
           submission = _context5.sent;
           // this.score(submission.id, i);
           submissions[i] = submission;
 
-        case 16:
+        case 14:
           i++;
-          _context5.next = 11;
+          _context5.next = 9;
           break;
 
-        case 19:
-          _context5.next = 21;
-          return regeneratorRuntime.awrap(list(created._id));
+        case 17:
+          _context5.next = 19;
+          return regeneratorRuntime.awrap(list(created._id, jwtToken));
 
-        case 21:
+        case 19:
           results = _context5.sent;
-          _context5.next = 24;
+          _context5.next = 22;
           return regeneratorRuntime.awrap(decryptList(results, submissions[0].privateKey));
 
-        case 24:
+        case 22:
           // Dump all data
           results.forEach(function (x) {
             console.log("* " + JSON.stringify(x, null, 2));
@@ -230,20 +232,20 @@ function bootstrap() {
           // console.log(await this.listPlain(created.id))
           */
 
-          _context5.next = 30;
+          _context5.next = 28;
           break;
 
-        case 27:
-          _context5.prev = 27;
-          _context5.t2 = _context5["catch"](0);
-          console.log(_context5.t2);
+        case 25:
+          _context5.prev = 25;
+          _context5.t0 = _context5["catch"](0);
+          console.log(_context5.t0);
 
-        case 30:
+        case 28:
         case "end":
           return _context5.stop();
       }
     }
-  }, null, null, [[0, 27]]);
+  }, null, null, [[0, 25]]);
 }
 
 function decryptList(payloads, privateKeyArmored) {

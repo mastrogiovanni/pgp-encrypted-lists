@@ -29,8 +29,14 @@ async function submit(idTemplate, name, email, payload) {
     return response.data;
 }
 
-async function list(idTemplate) {
-    const response = await axios.get(`http://localhost:3000/pgp/list/${idTemplate}`);
+async function list(idTemplate, jwtToken) {
+    const response = await axios.request({
+        method: 'get',
+        url: `http://localhost:3000/pgp/list/${idTemplate}`,
+        headers: {
+            'X-Auth-Token': jwtToken
+        }
+    });
     return response.data;
 }
 
@@ -67,7 +73,7 @@ async function bootstrap() {
 
         const created = await create("Michele Mastrogiovanni", "michele.mastrogiovanni@gmail.com", {});
 
-        console.log(await login(created._id, created.privateKey));
+        const jwtToken = await login(created._id, created.privateKey);
 
         let submissions = {}
         for (let i = 0; i < 3; i++) {
@@ -85,7 +91,7 @@ async function bootstrap() {
             submissions[i] = submission;
         }
 
-        const results = await list(created._id);
+        const results = await list(created._id, jwtToken);
 
         // Decrypt with first private key
         await decryptList(results, submissions[0].privateKey);

@@ -93,7 +93,9 @@ export class PgpService {
         }
 
         return jwt.sign({
-            idTemplate: loginDto.idTemplate,
+            data: {
+                idTemplate: loginDto.idTemplate
+            },
             exp: Math.floor(Date.now() / 1000) + (60 * 60),
         }, JWT_TOKEN_SECRET);
     }
